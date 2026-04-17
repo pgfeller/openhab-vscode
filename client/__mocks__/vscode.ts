@@ -46,6 +46,13 @@ export const commands = {
   executeCommand: jest.fn(() => Promise.resolve())
 }
 
+export const env = {
+  clipboard: {
+    writeText: jest.fn(() => Promise.resolve()),
+    readText: jest.fn(() => Promise.resolve(''))
+  }
+}
+
 export const Uri = {
   parse: jest.fn((url: string) => ({ toString: () => url })),
   file: jest.fn((path: string) => ({ fsPath: path, toString: () => path }))
