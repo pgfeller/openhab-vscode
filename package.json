@@ -44,7 +44,7 @@
             },
             {
                 "command": "openhab.command.copyName",
-                "title": "Copy Name"
+                "title": "Copy UID"
             },
             {
                 "command": "openhab.command.items.copyState",
@@ -291,10 +291,6 @@
                 {
                     "command": "openhab.command.copyName",
                     "when": "view == openhabItems"
-                },
-                {
-                    "command": "openhab.command.copyName",
-                    "when": "view == openhabThings"
                 },
                 {
                     "command": "openhab.command.items.addRule",

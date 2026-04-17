@@ -119,25 +119,17 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
             thingsExplorer.refresh()
         }))
 
-        disposables.push(vscode.commands.registerCommand('openhab.command.copyName', (query) => {
-            let text: string | undefined
-            if (typeof query === 'string') {
-                text = String(query)
-            } else if (query) {
-                // Prefer human-readable label/name first, then UID as fallback
-                if (query.label) {
-                    text = String(query.label)
-                } else if (query.name) {
-                    text = String(query.name)
-                } else if (query.UID || query.uid) {
-                    text = String(query.UID || query.uid)
-                }
-            }
-            if (!text) {
-                vscode.window.showInformationMessage('Nothing selected to copy')
+        disposables.push(vscode.commands.registerCommand('openhab.command.copyName', (query: Item) => {
+            if (!query) {
+                vscode.window.showInformationMessage('No item selected to copy')
                 return
             }
-            return vscode.env.clipboard.writeText(String(text)).catch(() => vscode.window.showErrorMessage("Failed to copy to clipboard"))
+            const uid = query.name ? String(query.name) : undefined
+            if (!uid) {
+                vscode.window.showInformationMessage('No UID available to copy')
+                return
+            }
+            return vscode.env.clipboard.writeText(uid).catch(() => vscode.window.showErrorMessage('Failed to copy to clipboard'))
         }))
 
         disposables.push(vscode.commands.registerCommand('openhab.command.items.copyState', (query: Item) => {
