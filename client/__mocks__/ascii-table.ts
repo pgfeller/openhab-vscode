@@ -16,4 +16,7 @@ class AsciiTable {
   }
 }
 
+// Make constructable when imported via `import * as AsciiTable from 'ascii-table'`
+Object.defineProperty(AsciiTable, '__esModule', { value: true })
+
 export = AsciiTable

@@ -7,17 +7,8 @@ import { THING_TEMPLATE } from '../src/ThingsExplorer/ItemsProvider'
 import { Thing } from '../src/ThingsExplorer/Thing'
 import { Channel } from '../src/ThingsExplorer/Channel'
 
-jest.mock('ascii-table', () => {
-    class MockAsciiTable {
-        private rows: any[][] = []
-        addRowMatrix(rows: any[][]): this { this.rows = rows; return this }
-        removeBorder(): this { return this }
-        toString(): string { return this.rows.map((r: any[]) => r.join(' ')).join('\n') }
-    }
-    // __importStar returns a module with __esModule:true as-is (keeps it constructable)
-    Object.defineProperty(MockAsciiTable, '__esModule', { value: true })
-    return MockAsciiTable
-})
+// Use the manual mock in __mocks__/ascii-table.ts
+jest.mock('ascii-table')
 
 describe('ThingsExplorer.getTreeItem() — Thing', () => {
     let explorer: ThingsExplorer
