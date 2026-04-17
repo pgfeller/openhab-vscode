@@ -137,7 +137,7 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
                 vscode.window.showInformationMessage('Nothing selected to copy')
                 return
             }
-            vscode.env.clipboard.writeText(String(text))
+            return vscode.env.clipboard.writeText(String(text)).catch(() => vscode.window.showErrorMessage("Failed to copy to clipboard"))
         }))
 
         disposables.push(vscode.commands.registerCommand('openhab.command.items.copyState', (query: Item) => {
@@ -146,7 +146,7 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
                 vscode.window.showInformationMessage('No state available to copy')
                 return
             }
-            vscode.env.clipboard.writeText(String(state))
+            return vscode.env.clipboard.writeText(String(state)).catch(() => vscode.window.showErrorMessage("Failed to copy to clipboard"))
         }))
 
         disposables.push(vscode.commands.registerCommand('openhab.command.items.copyLabel', (query: Item) => {
@@ -159,7 +159,7 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
                 vscode.window.showInformationMessage('No label available to copy')
                 return
             }
-            vscode.env.clipboard.writeText(String(label))
+            return vscode.env.clipboard.writeText(String(label)).catch(() => vscode.window.showErrorMessage("Failed to copy to clipboard"))
         }))
 
         disposables.push(vscode.commands.registerCommand('openhab.command.items.addRule', (query: Item) => {
@@ -192,7 +192,7 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
                 vscode.window.showInformationMessage('No UID available to copy')
                 return
             }
-            vscode.env.clipboard.writeText(String(uid))
+            return vscode.env.clipboard.writeText(String(uid)).catch(() => vscode.window.showErrorMessage("Failed to copy to clipboard"))
         }))
 
         disposables.push(vscode.commands.registerCommand('openhab.command.things.copyLabel', (query: Thing) => {
@@ -205,7 +205,7 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
                 vscode.window.showInformationMessage('No label available to copy')
                 return
             }
-            vscode.env.clipboard.writeText(String(label))
+            return vscode.env.clipboard.writeText(String(label)).catch(() => vscode.window.showErrorMessage("Failed to copy to clipboard"))
         }))
 
 
