@@ -124,13 +124,13 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
             if (typeof query === 'string') {
                 text = String(query)
             } else if (query) {
-                // Prefer UID (things), then name (items), then label as fallback
-                if (query.UID || query.uid) {
-                    text = String(query.UID || query.uid)
+                // Prefer human-readable label/name first, then UID as fallback
+                if (query.label) {
+                    text = String(query.label)
                 } else if (query.name) {
                     text = String(query.name)
-                } else if (query.label) {
-                    text = String(query.label)
+                } else if (query.UID || query.uid) {
+                    text = String(query.UID || query.uid)
                 }
             }
             if (!text) {
