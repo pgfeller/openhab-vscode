@@ -129,7 +129,7 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
                 vscode.window.showInformationMessage('No UID available to copy')
                 return
             }
-            return Promise.resolve(vscode.env.clipboard.writeText(uid)).catch(() => vscode.window.showErrorMessage('Failed to copy to clipboard'))
+            return Promise.resolve(vscode.env.clipboard.writeText(uid)).catch(() => { vscode.window.showErrorMessage('Failed to copy to clipboard') })
         }))
 
         disposables.push(vscode.commands.registerCommand('openhab.command.items.copyState', (query: Item) => {
@@ -138,7 +138,7 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
                 vscode.window.showInformationMessage('No state available to copy')
                 return
             }
-            return Promise.resolve(vscode.env.clipboard.writeText(String(state))).catch(() => vscode.window.showErrorMessage("Failed to copy to clipboard"))
+            return Promise.resolve(vscode.env.clipboard.writeText(String(state))).catch(() => { vscode.window.showErrorMessage("Failed to copy to clipboard") })
         }))
 
         disposables.push(vscode.commands.registerCommand('openhab.command.items.copyLabel', (query: Item) => {
@@ -151,7 +151,7 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
                 vscode.window.showInformationMessage('No label available to copy')
                 return
             }
-            return Promise.resolve(vscode.env.clipboard.writeText(String(label))).catch(() => vscode.window.showErrorMessage("Failed to copy to clipboard"))
+            return Promise.resolve(vscode.env.clipboard.writeText(String(label))).catch(() => { vscode.window.showErrorMessage("Failed to copy to clipboard") })
         }))
 
         disposables.push(vscode.commands.registerCommand('openhab.command.items.addRule', (query: Item) => {
@@ -184,7 +184,7 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
                 vscode.window.showInformationMessage('No UID available to copy')
                 return
             }
-            return Promise.resolve(vscode.env.clipboard.writeText(String(uid))).catch(() => vscode.window.showErrorMessage("Failed to copy to clipboard"))
+            return Promise.resolve(vscode.env.clipboard.writeText(String(uid))).catch(() => { vscode.window.showErrorMessage("Failed to copy to clipboard") })
         }))
 
         disposables.push(vscode.commands.registerCommand('openhab.command.things.copyLabel', (query: Thing) => {
@@ -197,7 +197,7 @@ async function init(disposables: vscode.Disposable[], context: vscode.ExtensionC
                 vscode.window.showInformationMessage('No label available to copy')
                 return
             }
-            return Promise.resolve(vscode.env.clipboard.writeText(String(label))).catch(() => vscode.window.showErrorMessage("Failed to copy to clipboard"))
+            return Promise.resolve(vscode.env.clipboard.writeText(String(label))).catch(() => { vscode.window.showErrorMessage("Failed to copy to clipboard") })
         }))
 
 
@@ -271,7 +271,7 @@ export function activate(context: vscode.ExtensionContext) {
     init(disposables, context)
         .catch(err => console.error(err))
 
-    var message = `openHAB vscode extension has been activated`
+    const message = `openHAB vscode extension has been activated`
     console.log(message)
     utils.appendToOutput(message)
 
@@ -281,7 +281,7 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
     ohStatusBarItem.hide()
 
-    var message = `openHAB vscode extension has been shut down`
+    const message = `openHAB vscode extension has been shut down`
     console.log(message)
     utils.appendToOutput(message)
 }
