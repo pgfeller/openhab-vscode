@@ -27,8 +27,8 @@ function copyName(query: Item | undefined): Promise<void> | undefined {
     vscode.window.showInformationMessage('No UID available to copy')
     return undefined
   }
-  return vscode.env.clipboard.writeText(uid)
-    .catch(() => vscode.window.showErrorMessage('Failed to copy to clipboard'))
+  return Promise.resolve(vscode.env.clipboard.writeText(uid))
+    .catch(() => { vscode.window.showErrorMessage('Failed to copy to clipboard') })
 }
 
 function copyState(query: Item | undefined): Promise<void> | undefined {
@@ -37,8 +37,8 @@ function copyState(query: Item | undefined): Promise<void> | undefined {
     vscode.window.showInformationMessage('No state available to copy')
     return undefined
   }
-  return vscode.env.clipboard.writeText(String(state))
-    .catch(() => vscode.window.showErrorMessage('Failed to copy to clipboard'))
+  return Promise.resolve(vscode.env.clipboard.writeText(String(state)))
+    .catch(() => { vscode.window.showErrorMessage('Failed to copy to clipboard') })
 }
 
 function copyItemLabel(query: Item | undefined): Promise<void> | undefined {
@@ -51,8 +51,8 @@ function copyItemLabel(query: Item | undefined): Promise<void> | undefined {
     vscode.window.showInformationMessage('No label available to copy')
     return undefined
   }
-  return vscode.env.clipboard.writeText(String(label))
-    .catch(() => vscode.window.showErrorMessage('Failed to copy to clipboard'))
+  return Promise.resolve(vscode.env.clipboard.writeText(String(label)))
+    .catch(() => { vscode.window.showErrorMessage('Failed to copy to clipboard') })
 }
 
 function copyThingsUID(query: Thing | string | undefined): Promise<void> | undefined {
@@ -70,8 +70,8 @@ function copyThingsUID(query: Thing | string | undefined): Promise<void> | undef
     vscode.window.showInformationMessage('No UID available to copy')
     return undefined
   }
-  return vscode.env.clipboard.writeText(String(uid))
-    .catch(() => vscode.window.showErrorMessage('Failed to copy to clipboard'))
+  return Promise.resolve(vscode.env.clipboard.writeText(String(uid)))
+    .catch(() => { vscode.window.showErrorMessage('Failed to copy to clipboard') })
 }
 
 function copyThingsLabel(query: Thing | undefined): Promise<void> | undefined {
@@ -84,8 +84,8 @@ function copyThingsLabel(query: Thing | undefined): Promise<void> | undefined {
     vscode.window.showInformationMessage('No label available to copy')
     return undefined
   }
-  return vscode.env.clipboard.writeText(String(label))
-    .catch(() => vscode.window.showErrorMessage('Failed to copy to clipboard'))
+  return Promise.resolve(vscode.env.clipboard.writeText(String(label)))
+    .catch(() => { vscode.window.showErrorMessage('Failed to copy to clipboard') })
 }
 
 // ————————————————————————————————————————————————————————————————————————————
@@ -101,9 +101,10 @@ const makeThing = (overrides: Partial<{ UID: string; label: string }> = {}): Thi
 describe('copyName (Items — Copy UID)', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  test('writes item.name to clipboard', async () => {
-    await copyName(makeItem())
-    expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('TV_Room_Power')
+  test('writes item.name to clipboard', () => {
+    return copyName(makeItem())!.then(() => {
+      expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('TV_Room_Power')
+    })
   })
 
   test('shows info message when no argument provided', () => {
@@ -118,19 +119,28 @@ describe('copyName (Items — Copy UID)', () => {
     expect(vscode.env.clipboard.writeText).not.toHaveBeenCalled()
   })
 
-  test('shows error message when clipboard.writeText rejects', async () => {
-    (vscode.env.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('denied'))
-    await copyName(makeItem())
-    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('Failed to copy to clipboard')
+  test('shows error message when clipboard.writeText rejects', () => {
+    ; (vscode.env.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('denied'))
+    return copyName(makeItem())!.then(() => {
+      expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('Failed to copy to clipboard')
+    })
+  })
+
+  test('handles a Thenable without .catch() without throwing', () => {
+    ; (vscode.env.clipboard.writeText as jest.Mock).mockReturnValueOnce(
+      { then: (cb?: ((v: void) => void) | null) => { cb?.(undefined); return Promise.resolve() } }
+    )
+    return expect(copyName(makeItem())).resolves.toBeUndefined()
   })
 })
 
 describe('copyState (Items)', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  test('writes item.state to clipboard', async () => {
-    await copyState(makeItem({ state: 'ON' }))
-    expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('ON')
+  test('writes item.state to clipboard', () => {
+    return copyState(makeItem({ state: 'ON' }))!.then(() => {
+      expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('ON')
+    })
   })
 
   test('shows info message when state is absent', () => {
@@ -144,14 +154,29 @@ describe('copyState (Items)', () => {
     expect(vscode.window.showInformationMessage).toHaveBeenCalledWith('No state available to copy')
     expect(vscode.env.clipboard.writeText).not.toHaveBeenCalled()
   })
+
+  test('shows error message when clipboard.writeText rejects', () => {
+    ; (vscode.env.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('denied'))
+    return copyState(makeItem({ state: 'ON' }))!.then(() => {
+      expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('Failed to copy to clipboard')
+    })
+  })
+
+  test('handles a Thenable without .catch() without throwing', () => {
+    ; (vscode.env.clipboard.writeText as jest.Mock).mockReturnValueOnce(
+      { then: (cb?: ((v: void) => void) | null) => { cb?.(undefined); return Promise.resolve() } }
+    )
+    return expect(copyState(makeItem({ state: 'ON' }))).resolves.toBeUndefined()
+  })
 })
 
 describe('copyItemLabel (Items)', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  test('writes item.label to clipboard', async () => {
-    await copyItemLabel(makeItem({ label: 'TV Room Power' }))
-    expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('TV Room Power')
+  test('writes item.label to clipboard', () => {
+    return copyItemLabel(makeItem({ label: 'TV Room Power' }))!.then(() => {
+      expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('TV Room Power')
+    })
   })
 
   test('shows info message when label is empty', () => {
@@ -165,19 +190,35 @@ describe('copyItemLabel (Items)', () => {
     expect(vscode.window.showInformationMessage).toHaveBeenCalledWith('No item selected to copy')
     expect(vscode.env.clipboard.writeText).not.toHaveBeenCalled()
   })
+
+  test('shows error message when clipboard.writeText rejects', () => {
+    ; (vscode.env.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('denied'))
+    return copyItemLabel(makeItem({ label: 'TV Room Power' }))!.then(() => {
+      expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('Failed to copy to clipboard')
+    })
+  })
+
+  test('handles a Thenable without .catch() without throwing', () => {
+    ; (vscode.env.clipboard.writeText as jest.Mock).mockReturnValueOnce(
+      { then: (cb?: ((v: void) => void) | null) => { cb?.(undefined); return Promise.resolve() } }
+    )
+    return expect(copyItemLabel(makeItem({ label: 'TV Room Power' }))).resolves.toBeUndefined()
+  })
 })
 
 describe('copyThingsUID (Things — Copy UID)', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  test('writes Thing UID to clipboard', async () => {
-    await copyThingsUID(makeThing())
-    expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('mqtt:broker:mybroker')
+  test('writes Thing UID to clipboard', () => {
+    return copyThingsUID(makeThing())!.then(() => {
+      expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('mqtt:broker:mybroker')
+    })
   })
 
-  test('accepts a plain string argument', async () => {
-    await copyThingsUID('zwave:device:ctrl:node1')
-    expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('zwave:device:ctrl:node1')
+  test('accepts a plain string argument', () => {
+    return copyThingsUID('zwave:device:ctrl:node1')!.then(() => {
+      expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('zwave:device:ctrl:node1')
+    })
   })
 
   test('shows info message when no argument provided', () => {
@@ -192,14 +233,29 @@ describe('copyThingsUID (Things — Copy UID)', () => {
     expect(vscode.window.showInformationMessage).toHaveBeenCalledWith('No UID available to copy')
     expect(vscode.env.clipboard.writeText).not.toHaveBeenCalled()
   })
+
+  test('shows error message when clipboard.writeText rejects', () => {
+    ; (vscode.env.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('denied'))
+    return copyThingsUID(makeThing())!.then(() => {
+      expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('Failed to copy to clipboard')
+    })
+  })
+
+  test('handles a Thenable without .catch() without throwing', () => {
+    ; (vscode.env.clipboard.writeText as jest.Mock).mockReturnValueOnce(
+      { then: (cb?: ((v: void) => void) | null) => { cb?.(undefined); return Promise.resolve() } }
+    )
+    return expect(copyThingsUID(makeThing())).resolves.toBeUndefined()
+  })
 })
 
 describe('copyThingsLabel (Things)', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  test('writes Thing label to clipboard', async () => {
-    await copyThingsLabel(makeThing({ label: 'MQTT Broker' }))
-    expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('MQTT Broker')
+  test('writes Thing label to clipboard', () => {
+    return copyThingsLabel(makeThing({ label: 'MQTT Broker' }))!.then(() => {
+      expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('MQTT Broker')
+    })
   })
 
   test('shows info message when label is absent', () => {
@@ -214,9 +270,17 @@ describe('copyThingsLabel (Things)', () => {
     expect(vscode.env.clipboard.writeText).not.toHaveBeenCalled()
   })
 
-  test('shows error message when clipboard.writeText rejects', async () => {
-    (vscode.env.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('denied'))
-    await copyThingsLabel(makeThing())
-    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('Failed to copy to clipboard')
+  test('shows error message when clipboard.writeText rejects', () => {
+    ; (vscode.env.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('denied'))
+    return copyThingsLabel(makeThing())!.then(() => {
+      expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('Failed to copy to clipboard')
+    })
+  })
+
+  test('handles a Thenable without .catch() without throwing', () => {
+    ; (vscode.env.clipboard.writeText as jest.Mock).mockReturnValueOnce(
+      { then: (cb?: ((v: void) => void) | null) => { cb?.(undefined); return Promise.resolve() } }
+    )
+    return expect(copyThingsLabel(makeThing())).resolves.toBeUndefined()
   })
 })
