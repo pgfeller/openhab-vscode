@@ -20,6 +20,7 @@ module.exports = {
         message: 'Use Promise chains (.then/.catch) instead of async/await'
       }
     ],
+    'no-var': 'warn',
     // Disabled due to existing violations. See issue #334
     curly: 'off',
     eqeqeq: 'off',
