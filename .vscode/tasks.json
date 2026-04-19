@@ -42,6 +42,22 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Install extension in all profiles",
+            "type": "shell",
+            "command": "npm run webpack && npx vsce package && for profile in 'openHAB - VS Code Extension' 'openHAB -  Configuration' 'openHAB - Binding Development'; do code --install-extension openhab-*.vsix --profile \"$profile\" --force; done",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "clear": true
+            },
+            "problemMatcher": []
         }
     ]
 }
