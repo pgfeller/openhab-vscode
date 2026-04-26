@@ -15,3 +15,21 @@ Preferred commands:
 - `gh pr list` — list PRs
 
 Never open a browser page to a GitHub issue or pull request URL to read or edit it.
+
+## Filling Out Issue Templates
+
+When a user asks to file a GitHub issue, always read the relevant template first:
+
+```bash
+cat .github/ISSUE_TEMPLATE/feature_request.md   # for feature requests
+cat .github/ISSUE_TEMPLATE/bug_report.md         # for bug reports
+```
+
+Fill every section of the template. Use `gh issue create --body "..."` to post the completed issue.
+
+### Screenshots and images from chat context
+
+Screenshots attached to the chat cannot be uploaded programmatically via `gh`. When an issue body should include a screenshot:
+
+1. Insert a clearly labelled placeholder: `> _[Attach screenshot manually: <description of what the screenshot shows>]_`
+2. Note this to the user after creating the issue so they can edit it on GitHub and drag-drop the image.
